@@ -348,6 +348,7 @@ function watchFile() {
 
 // Stream Logs
 function streamData() {
+  console.log("Streaming");
   var s = fs
     .createReadStream(logFileLocation)
     .pipe(es.split())
@@ -393,12 +394,10 @@ function regexGROKTest(str) {
     if (spiderBot) {
       newJSON.spiderBot = spiderBot;
     }
-    // console.log(newJSON.url);
+
     const parsedURL = regexURL(newJSON.url);
     if (parsedURL) newJSON = Object.assign(newJSON, parsedURL);
-    // getStreamAndEmit(newJSON);
-    // addToIndex(newJSON);
-    // console.log(newJSON);
+    addToIndex(newJSON);
   }
 }
 
