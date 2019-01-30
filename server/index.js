@@ -49,13 +49,11 @@ app.get("/settings", function(req, res, next) {
     alertEmailAddressArray: alertEmailAddressArray,
     alertRules: alertRules
   };
-  console.log(obj);
   res.json(obj);
 });
 
 app.get("/get-alert-rules", function(req, res, next) {
   let obj = { alertRules: alertRules };
-  console.log(obj);
   res.json(obj);
 });
 
@@ -63,7 +61,6 @@ app.get("/get-alert-rules", function(req, res, next) {
 app.post("/add-alert-rules", (req, res) => {
   const alert = req.body;
   alert.alertUid = uuidv1();
-  console.log(alert);
   alertRules.push(req.body);
   runAlert(alert);
   updateSettingsConfig();
@@ -76,10 +73,10 @@ app.post("/update-alert-state", (req, res) => {
   alertRules.forEach(doc => {
     if (doc.alertUid == obj.alertUid) {
       if (obj.alertState) {
-        console.log("TRUWEEE");
+        unSubscribeTimeInterval(obj.alertUid);
         doc.alertState = false;
       } else {
-        console.log("FAAALSAE");
+        runAlert(doc);
         doc.alertState = true;
       }
     }
@@ -91,17 +88,14 @@ app.post("/update-alert-state", (req, res) => {
 // To Update Alert Rules Config
 app.post("/delete-alert-state", (req, res) => {
   let obj = req.body;
-  console.log(obj.alertUid);
   const newAlertRules = alertRules.filter(x => x.alertUid != obj.alertUid);
   alertRules = newAlertRules;
   unSubscribeTimeInterval(obj.alertUid);
-  console.log("updated", alertRules);
   updateSettingsConfig();
   res.send("Successfully Updated");
 });
 
 function unSubscribeTimeInterval(uid) {
-  console.log("unsubscribe", intervalObject[uid]);
   clearInterval(intervalObject[uid]);
 }
 
@@ -133,16 +127,15 @@ client.ping(
 function initialSettingsConfig() {
   var text = fs.readFileSync("public/settings.txt", "utf8");
   var settingsConfig = JSON.parse(text);
-  logsThresholdCount = settingsConfig.logsThresholdCount;
-  alertEmailAddress = settingsConfig.alertEmailAddress;
-  alertEmailAddressArray = settingsConfig.alertEmailAddressArray;
   alertRules = settingsConfig.alertRules;
   callAlertRules(alertRules);
 }
 
 function callAlertRules(alertRules) {
   alertRules.map(alert => {
-    runAlert(alert);
+    if (alert.alertState) {
+      runAlert(alert);
+    }
   });
 }
 
