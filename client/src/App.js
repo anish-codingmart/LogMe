@@ -54,10 +54,10 @@ class App extends Component {
               </div>
               <div className="col-md-10 main-container">
                 <Switch>
-                  <Route exact path="/" component={MainContainer} />
                   <Route exact path="/admin" component={MainContainer} />
                   <Route exact path="/discover" component={Discover} />
                   <Route exact path="/settings" component={Settings} />
+                  <Route path="/" component={MainContainer} />
                 </Switch>
                 <ToastContainer />
               </div>

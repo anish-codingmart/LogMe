@@ -141,7 +141,7 @@ class MainContainer extends Component {
       .endOf("")
       .format();
     console.log(startDate, endDate);
-    const apiURL = "http://localhost:9200/logsindexnew/_search";
+    const apiURL = "/logsindexnew/_search";
     const query = {
       query: {
         bool: {
@@ -248,7 +248,7 @@ class MainContainer extends Component {
       lastWeekStartDate: startDate,
       lastWeekEndDate: endDate
     });
-    const apiURL = "http://localhost:9200/logsindexnew/_search";
+    const apiURL = "/logsindexnew/_search";
     const query = {
       query: {
         bool: {

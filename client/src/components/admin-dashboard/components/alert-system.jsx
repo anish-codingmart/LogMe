@@ -9,6 +9,11 @@ class AlertSystem extends Component {
     formErrors: [],
     fieldTypesList: [
       {
+        fieldTypeName: "All Logs",
+        fieldTypeValue: "allLogs",
+        fieldNames: [{ fieldName: "allLogs", fieldValue: "allLogs" }]
+      },
+      {
         fieldTypeName: "Route Type",
         fieldTypeValue: "type",
         fieldNames: [
@@ -72,9 +77,9 @@ class AlertSystem extends Component {
 
     fieldNames: [],
     newAlert: {
-      alertEmailAddressArray: [{ email: "logs@codingmart.com" }],
+      alertEmailAddressArray: [{ email: "testemailcodingmart@gmail.com" }],
       alertMobileNumberArray: [{ mobile: "" }],
-      alertMobileNumberFlag: true,
+      alertMobileNumberFlag: false,
       alertName: "",
       alertFrequency: "1000",
       alertFieldType: "type",
@@ -224,7 +229,7 @@ class AlertSystem extends Component {
   };
 
   getAlertRules() {
-    axios.get("http://localhost:3300/get-alert-rules").then(response => {
+    axios.get("/get-alert-rules").then(response => {
       const alertRules = response.data.alertRules;
       console.log(alertRules);
       this.setState({ alertRules: alertRules });
@@ -253,18 +258,19 @@ class AlertSystem extends Component {
       this.setState({ formErrors });
       this.setState({ submitOK: false });
     }
-    mobile.forEach(element => {
-      console.log(element.mobile);
-      if (
-        isNaN(element.mobile) ||
-        element.mobile < 1000000000 ||
-        element.mobile > 9999999999
-      ) {
-        formErrors.push("Mobile Number is Not Valid");
-        this.setState({ formErrors });
-        this.setState({ submitOK: false });
-      }
-    });
+    if (this.state.newAlert.alertMobileNumberFlag)
+      mobile.forEach(element => {
+        console.log(element.mobile);
+        if (
+          isNaN(element.mobile) ||
+          element.mobile < 1000000000 ||
+          element.mobile > 9999999999
+        ) {
+          formErrors.push("Mobile Number is Not Valid");
+          this.setState({ formErrors });
+          this.setState({ submitOK: false });
+        }
+      });
     setTimeout(() => {
       console.log(this.state.submitOK);
       console.log(this.state.formErrors);
@@ -292,19 +298,17 @@ class AlertSystem extends Component {
 
     setTimeout(() => {
       if (this.state.submitOK) {
-        axios
-          .post("http://localhost:3300/add-alert-rules", this.state.newAlert)
-          .then(response => {
-            console.log(response.data);
-            this.getAlertRules();
-            this.clearFields();
-            Swal.fire(
-              "Job Added Succesfully",
-              "Your job has been started",
-              "success"
-            );
-            // this.alertToast();
-          });
+        axios.post("/add-alert-rules", this.state.newAlert).then(response => {
+          console.log(response.data);
+          this.getAlertRules();
+          this.clearFields();
+          Swal.fire(
+            "Job Added Succesfully",
+            "Your job has been started",
+            "success"
+          );
+          // this.alertToast();
+        });
       }
     }, 1000);
   }
@@ -312,15 +316,18 @@ class AlertSystem extends Component {
   clearFields() {
     this.setState({
       newAlert: {
-        alertEmailAddressArray: [{ email: "logs@codingmart.com" }],
+        alertEmailAddressArray: [{ email: "testemailcodingmart@gmail.com" }],
+        alertMobileNumberArray: [{ mobile: "" }],
+        alertMobileNumberFlag: false,
         alertName: "",
-        alertFrequency: "",
-        alertFieldType: "",
-        alertFieldName: "",
-        alertOperator: "",
+        alertFrequency: "1000",
+        alertFieldType: "type",
+        alertFieldName: "booking",
+        alertOperator: ">",
         alertThresholdLimit: "",
-        alertState: true,
-        alertMobileNumberArray: [{ mobile: "" }]
+        alertRangeValue: "5",
+        alertRangeMetric: "seconds",
+        alertState: true
       }
     });
   }
@@ -328,12 +335,10 @@ class AlertSystem extends Component {
   updateAlertState(alert) {
     console.log(alert.alertName);
     let obj = { alertUid: alert.alertUid, alertState: alert.alertState };
-    axios
-      .post("http://localhost:3300/update-alert-state", obj)
-      .then(response => {
-        console.log(response.data);
-        this.getAlertRules();
-      });
+    axios.post("/update-alert-state", obj).then(response => {
+      console.log(response.data);
+      this.getAlertRules();
+    });
     console.log(obj);
   }
 
@@ -349,13 +354,11 @@ class AlertSystem extends Component {
       confirmButtonText: "Yes, delete it!"
     }).then(result => {
       if (result.value) {
-        axios
-          .post("http://localhost:3300/delete-alert-state", obj)
-          .then(response => {
-            console.log(response.data);
-            Swal.fire("Deleted!", "Job has been deleted.", "success");
-            this.getAlertRules();
-          });
+        axios.post("/delete-alert-state", obj).then(response => {
+          console.log(response.data);
+          Swal.fire("Deleted!", "Job has been deleted.", "success");
+          this.getAlertRules();
+        });
         console.log(obj);
       }
     });
