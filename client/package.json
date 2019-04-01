@@ -6,6 +6,7 @@
     "@appbaseio/reactivesearch": "^3.0.0-alpha.10",
     "axios": "^0.18.0",
     "chart.js": "^2.7.3",
+    "downloadjs": "^1.4.7",
     "http-proxy-middleware": "^0.19.1",
     "react": "^16.7.0",
     "react-chartjs-2": "^2.7.4",

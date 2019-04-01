@@ -8,7 +8,6 @@ class Settings extends Component {
   state = { alertEmailAddressArray: [{ email: "logs@codingmart.com" }] };
   constructor() {
     super();
-    this.getSettingsData();
   }
 
   alertEmailAddressInput(event) {
@@ -42,7 +41,7 @@ class Settings extends Component {
   }
 
   getSettingsData() {
-    axios.get("http://localhost:3300/settings").then(response => {
+    axios.get("/settings").then(response => {
       console.log(response.data);
       let obj = response.data;
       console.log(obj);
